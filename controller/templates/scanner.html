@@ -1,0 +1,86 @@
+{% extends 'layout.html' %} 
+{% block content %} 
+
+  {% if not endpoint_set %}
+    <form method="post" action="">
+      {{ form.hidden_tag() }} <!-- To protect against CRSF -->
+      <legend class="mb-4">Enter your API endpoint</legend>
+      <div class="row mb-3 w-50">
+        {{ form.endpoint.label}}  <!-- Label -->
+          {{ form.endpoint(class="form-control form-control-lg") }} <!-- Input field -->
+      </div>
+      {{ form.submit(class="btn btn-secondary") }} <!-- Submit button -->
+    </form>
+
+    {% else %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <form method="post" action="">
+        {{ scanform.hidden_tag() }}
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            {{ scanform.ip.label}}
+            <!-- Label -->
+          </div>
+          <div class="col-auto">
+            {{ scanform.ip(class="form-control form-control-lg") }}
+          </div>
+          <div class="col-auto">
+            {{ scanform.scan_type(class="form-control")}}
+          </div>
+          <div class="col-auto">
+            {{ scanform.submit(class="btn btn-secondary") }}
+            <!-- Submit button -->
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col">
+            
+        {% if data %}
+        <div class="container-fluid border border-black border-2 rounded p-3">
+          {% if data["host"] is mapping %}
+            {% if "@addr" in data["address"] %}
+
+              <div class="row mt-3">
+                <a href="{{ url_for('host') }}?host_ip={{data['host']['address']['@addr']}}"> {{ data["host"]["address"]["@addr"] }}</a>
+              </div>
+
+            {% else %}
+
+              <div class="row mt-3">
+                <a href="{{ url_for('host') }}?host_ip={{data['host']['address'][0]['@addr']}}"> {{ data["host"]["address"][0]["@addr"] }}</a>
+              </div>
+
+            {% endif %}
+
+          {% else %}
+                {% for host in data["host"] %}
+
+                  {% if "@addr" in host["address"] %}
+
+                    <div class="row mt-3">
+                        <a href="{{ url_for('host') }}?host_ip={{host['address']['@addr']}}"> {{ host["address"]["@addr"] }} </a>
+                    </div>
+
+                  {% else %}
+
+                    <div class="row mt-3">
+                        <a href="{{ url_for('host') }}?host_ip={{host['address'][0]['@addr']}}"> {{ host["address"][0]["@addr"] }} </a>
+                    </div>
+
+                  {% endif %}
+
+                {% endfor %}
+          {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
