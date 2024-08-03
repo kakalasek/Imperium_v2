@@ -1,13 +1,17 @@
+# This file defines forms used in this app #
+
+# Imports #
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
-class ApiForm(FlaskForm):
+# Forms #
+class ApiForm(FlaskForm):   # This form is used for specifying an API endpoint for each of the parts of the app
     endpoint = StringField('API Endpoint', 
                             validators=[DataRequired()])
     submit = SubmitField('Test')
 
-class ScanForm(FlaskForm):
+class ScanForm(FlaskForm):  # This form is used in the Scanner part of of this app. It is a simple form for specifying the target and type of scan
     ip = StringField('IP Adress or Range',
                        validators=[DataRequired()])
     scan_type = SelectField("Scan Type", choices=[('-sS', 'Syn Scan'), ('-sV', 'Version Scan'), ('-O', 'System Scan'), ('-sF', 'Fin Scan'), ('-sU', 'UDP Scan'), ('-sT', 'Connect Scan')])
