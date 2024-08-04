@@ -3,11 +3,15 @@
 # Imports #
 from flask import Flask, render_template, url_for, redirect, request
 from forms import ApiForm, ScanForm
+from flask_sqlalchemy import SQLAlchemy
 import requests
 
 # Configuration #
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "73eeac3fa1a0ce48f381ca1e6d71f077"
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///db.sqlite3'
+
+db = SQLAlchemy(app)
 
 # Global variables #
 endpoints = [False, False, False, False] # Field with all currently set endpoints
