@@ -2,41 +2,34 @@
 {% block content %} 
 
   {% if not endpoint_set %}
-    <form method="post" action="">
-      {{ form.hidden_tag() }} <!-- To protect against CRSF -->
-      <legend class="mb-4">Enter your API endpoint</legend>
-      <div class="row mb-3 w-50">
-        {{ form.endpoint.label}}  <!-- Label -->
-          {{ form.endpoint(class="form-control form-control-lg") }} <!-- Input field -->
-      </div>
-      {{ form.submit(class="btn btn-secondary") }} <!-- Submit button -->
-    </form>
 
-    {% else %}
+    <div class="h1">Endpoint not set</div>
+    
+  {% else %}
 
-      <div class="container-fluid">
-        <div class="row gx-2">
-          <div class="col">
-            <!-- Scan Form-->
-          </div>
-          <div class="col">
-              <div class="container-fluid p-2 border border-dark rounded">
-                <div class="row pb-2">
-                  <div class="col">
-                    <button class="btn btn-primary">Refresh Database</button>
-                  </div>
+    <div class="container-fluid">
+      <div class="row gx-2">
+        <div class="col">
+          <!-- Scan Form-->
+        </div>
+        <div class="col">
+            <div class="container-fluid p-2 border border-dark rounded">
+              <div class="row pb-2">
+                <div class="col">
+                  <button class="btn btn-primary">Refresh Database</button>
                 </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="d-flex flex-column border border-dark rounded vh-100 overflow-auto p-2">
-                      <!-- Scans -->
-                    </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex flex-column border border-dark rounded vh-100 overflow-auto p-2">
+                    <!-- Scans -->
                   </div>
                 </div>
               </div>
-          </div>
+            </div>
         </div>
       </div>
+    </div>
 
-    {% endif %}
+  {% endif %}
 {% endblock %}

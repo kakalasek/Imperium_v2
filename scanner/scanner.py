@@ -20,7 +20,7 @@ def createJson():
 
 @app.route("/@test")
 def test():
-    return {'state': "Scanner"}
+    return '', 200
 
 @app.route("/@scan")
 def scan():
@@ -47,7 +47,7 @@ def scan():
     db.session.add(new_scan)
     db.session.commit()
 
-    return 200
+    return '', 201
 
 if __name__ == '__main__':
     with app.app_context():

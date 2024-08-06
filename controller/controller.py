@@ -2,20 +2,32 @@
 
 # Imports #
 from flask import Flask, render_template, url_for, redirect, request
-from forms import ApiForm, ScanForm
-from flask_sqlalchemy import SQLAlchemy
+from forms import ScanForm
+from models import db, Scan
+from flask_config import ApplicationConfig
+from config import read_config
 import requests
 
 # Configuration #
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "73eeac3fa1a0ce48f381ca1e6d71f077"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///db.sqlite3'
+app.config.from_object(ApplicationConfig)
+db.init_app(app)
 
-db = SQLAlchemy(app)
+config_data = read_config()
 
 # Global variables #
-endpoints = [False, False, False, False] # Field with all currently set endpoints
-data = [{}, {}, {}, {}] # Field for data manipulation
+scans = [] 
+endpoints = {
+    'scanner': config_data['scanner_endpoint']
+}
+
+def get_scans():
+    for scan in Scan.query.all():
+        scans.append({
+            'name': scan.name,
+            'targer': scan.target,
+            'scan_json': scan.scan_json
+        })
 
 # Routes #
 
@@ -23,31 +35,31 @@ data = [{}, {}, {}, {}] # Field for data manipulation
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', title='Home')
+    return render_template('home.html')
 
 # The scanner route
 @app.route("/scanner", methods=['GET', 'POST'])
 def scanner():
 
+    test = requests.get(f"{endpoints['scanner']}/@test")
+
     # Loading the forms
-    form = ApiForm()
     scanform = ScanForm()
 
-    # Returns for POST requests
-    if request.method == 'POST' and scanform.validate():    # Scan has been initiated
-        data[0] = requests.get(f"{endpoints[0]}/@scan?range={scanform.ip.data}&options={scanform.scan_type.data}").json()["nmaprun"]
-        return redirect(url_for("scanner"))
+    if test.status_code == 200:
+        endpoint_set = True
 
-    if request.method == 'POST' and form.validate():    # Endpoint has been set
-        try:
-            if requests.get(f"{form.endpoint.data}/@test").json()["state"] == "Scanner":
-                endpoints[0] = form.endpoint.data
-            return redirect(url_for("scanner"))
-        except: # If wrong endpoint or endpoint in the wrong format has been set
+
+        # Returns for POST requests
+        if request.method == 'POST' and scanform.validate():    # Scan has been initiated
+            data[0] = requests.get(f"{endpoints[0]}/@scan?range={scanform.ip.data}&options={scanform.scan_type.data}").json()["nmaprun"]
             return redirect(url_for("scanner"))
     
+    else:
+        endpoint_set = False
+
     # Default template return for GET requests
-    return render_template('scanner.html', form=form, scanform=scanform, endpoint_set=endpoints[0], data=data[0])
+    return render_template('scanner.html', scanform=scanform, endpoint_set=endpoint_set)
 
 # The scan route
 @app.route("/scanner/scan")
@@ -84,6 +96,7 @@ def host():
 ## THE REST
 ## WORK IN PROGRESS
 
+"""
 @app.route("/diagnostics", methods=['GET', 'POST'])
 def diagnostics():
     form = ApiForm()
@@ -119,6 +132,7 @@ def social_engineering():
         except:
             return redirect(url_for("social_engineering"))
     return render_template('social_engineering.html', form=form, endpoint_set=endpoints[3])
+"""
 
 if __name__ == '__main__':
     app.run(debug=True)
