@@ -6,6 +6,23 @@
             <h3>Hosts</h3>
             <div class="d-flex flex-column border border-dark rounded vh-100 overflow-auto p-2">
                 <!-- Hosts -->
+                {% if scan_json %}
+                    {% if scan_json['host'] is mapping %}
+                        {% if "@addr" in scan_json['host']['address'] %}
+                             <a href="{{ url_for('host') }}?host_ip={{ scan_json['host']['address']['@addr'] }}"> {{ scan_json['host']['address']['@addr'] }} </a>
+                        {% else %}
+                            <a href="{{ url_for('host') }}?host_ip={{ scan_json['host']['address'][0]['@addr'] }}"> {{ scan_json['host']['address'][0]['@addr'] }} </a>
+                        {% endif %}
+                    {% else %}
+                        {% for host in scan_json['host'] %}
+                            {% if "@addr" in host['address'] %}
+                                <a href="{{ url_for('host') }}?host_ip={{ host['address']['@addr'] }}"> {{ host['address']['@addr'] }} </a>
+                            {% else %}
+                                <a href="{{ url_for('host') }}?host_ip={{ host['address'][0]['@addr'] }}"> {{ host['address'][0]['@addr'] }} </a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
         <div class="col">

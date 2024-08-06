@@ -22,28 +22,16 @@ def createJson():
 def test():
     return '', 200
 
-@app.route("/@scan")
+@app.route("/@scan", methods=["POST"])
 def scan():
     json_output = createJson()
-    scan_name = ''
+    json_output = json.loads(json_output)
+    json_output = json_output['nmaprun']
+    json_output = json.dumps(json_output)
 
-    match request.args.get('options'):
-        case '-sS':
-            scan_name = 'SYN Scan'
-        case '-sV':
-            scan_name = 'Version Scan'
-        case '-O':
-            scan_name = 'System Scan'
-        case '-sF':
-            scan_name = 'Fin Scan'
-        case '-sU':
-            scan_name = 'UDP Scan'
-        case '-sT':
-            scan_name = 'Connect Scan'
-        case _:
-            scan_name = 'Scan'
+
             
-    new_scan = Scan(name=scan_name, target=request.args.get('range'), scan_json=json_output)
+    new_scan = Scan(name=request.args.get('scan_type'), target=request.args.get('range'), scan_json=json_output)
     db.session.add(new_scan)
     db.session.commit()
 
