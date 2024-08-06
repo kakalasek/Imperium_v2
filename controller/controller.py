@@ -49,8 +49,13 @@ def scanner():
     # Default template return for GET requests
     return render_template('scanner.html', title='Scanner', form=form, scanform=scanform, endpoint_set=endpoints[0], data=data[0])
 
+# The scan route
+@app.route("/scanner/scan")
+def scan():
+    return render_template('scan.html')
+
 # The host route
-@app.route("/scanner/host", methods=['GET'])
+@app.route("/scanner/host")
 def host():
     without_mac = True
 
