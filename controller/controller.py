@@ -47,7 +47,7 @@ def scanner():
             return redirect(url_for("scanner"))
     
     # Default template return for GET requests
-    return render_template('scanner.html', title='Scanner', form=form, scanform=scanform, endpoint_set=endpoints[0], data=data[0])
+    return render_template('scanner.html', form=form, scanform=scanform, endpoint_set=endpoints[0], data=data[0])
 
 # The scan route
 @app.route("/scanner/scan")
@@ -77,7 +77,7 @@ def host():
                     without_mac = False
                     break
 
-    return render_template('host.html', title=f'Host:{request.args.get('host_ip')}', data=host_data, without_mac=without_mac)
+    return render_template('host.html', data=host_data, without_mac=without_mac)
 
 
 
@@ -94,7 +94,7 @@ def diagnostics():
             return redirect(url_for("diagnostics"))
         except:
             return redirect(url_for("diagnostics"))
-    return render_template('diagnostics.html', title='Diagnostics', form=form, endpoint_set=endpoints[1])
+    return render_template('diagnostics.html', form=form, endpoint_set=endpoints[1])
 
 @app.route("/password_cracker", methods=['GET', 'POST'])
 def password_cracker():
@@ -106,7 +106,7 @@ def password_cracker():
             return redirect(url_for("password_cracker"))
         except:
             return redirect(url_for("password_cracker"))
-    return render_template('password_cracker.html', title='Password Cracker', form=form, endpoint_set=endpoints[2])
+    return render_template('password_cracker.html', form=form, endpoint_set=endpoints[2])
 
 @app.route("/social_engineering", methods=['GET', 'POST'])
 def social_engineering():
@@ -118,7 +118,7 @@ def social_engineering():
             return redirect(url_for("social_engineering"))
         except:
             return redirect(url_for("social_engineering"))
-    return render_template('social_engineering.html', title='Social Engineering', form=form, endpoint_set=endpoints[3])
+    return render_template('social_engineering.html', form=form, endpoint_set=endpoints[3])
 
 if __name__ == '__main__':
     app.run(debug=True)

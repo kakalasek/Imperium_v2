@@ -1,5 +1,5 @@
 from flask import Flask, request
-from models import db
+from models import db, Scan
 import subprocess
 import json
 import xmltodict
@@ -25,7 +25,29 @@ def test():
 @app.route("/@scan")
 def scan():
     json_output = createJson()
-    return json_output
+    scan_name = ''
+
+    match request.args.get('options'):
+        case '-sS':
+            scan_name = 'SYN Scan'
+        case '-sV':
+            scan_name = 'Version Scan'
+        case '-O':
+            scan_name = 'System Scan'
+        case '-sF':
+            scan_name = 'Fin Scan'
+        case '-sU':
+            scan_name = 'UDP Scan'
+        case '-sT':
+            scan_name = 'Connect Scan'
+        case _:
+            scan_name = 'Scan'
+            
+    new_scan = Scan(name=scan_name, target=request.args.get('range'), scan_json=json_output)
+    db.session.add(new_scan)
+    db.session.commit()
+
+    return 200
 
 if __name__ == '__main__':
     with app.app_context():
