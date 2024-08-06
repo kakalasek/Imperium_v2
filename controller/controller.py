@@ -75,10 +75,7 @@ def scanner():
                 case '-sT':
                     scan_name = 'Connect Scan'
 
-            print(scanform.no_ping.data)
-
             if scanform.no_ping.data:
-                print("hello")
                 options += " -Pn"
             if scanform.randomize_hosts.data:
                 options += " --randomize-hosts"
@@ -108,32 +105,39 @@ def scan():
             scan_json = json.loads(entry["scan_json"])
             break
 
-    return render_template('scan.html', scan_json=scan_json)
+    return render_template('scan.html', scan_json=scan_json, scan_id=scan_id)
 
 # The host route
 @app.route("/scanner/host")
 def host():
     without_mac = True
+    scan_id = request.args.get('scan_id')
+    host_ip = request.args.get('host_ip')
+    host_json = {}
 
-    if isinstance(data[0]["host"], dict):
-        if "@addr" in data[0]["host"]["address"]:
-            host_data = data[0]["host"]
-        else:
-            host_data = data[0]["host"]
-            without_mac = False
-    else:
-        for host in data[0]["host"]:
-            if "@addr" in host["address"]:
-                if host["address"]["@addr"] == request.args.get('host_ip'):
-                    host_data = host
-                    break
-            else:
-                if host["address"][0]["@addr"] == request.args.get('host_ip'):
-                    host_data = host
+    for entry in scans:
+        if entry["id"] == int(scan_id):
+            scan_json = json.loads(entry["scan_json"])
+            if isinstance(scan_json['host'], dict):
+                if "@addr" in scan_json['host']['address']:
+                    host_json = scan_json['host']
+                else:
+                    host_json = scan_json['host']
                     without_mac = False
-                    break
+            else:
+                for host in scan_json['host']:
+                    if "@addr" in host['address']:
+                        if host['address']['@addr'] == host_ip:
+                            host_json = host
+                            break
+                    elif host['address'][0]['@addr'] == host_ip:
+                        host_json = host
+                        without_mac = False
+                        break
 
-    return render_template('host.html', data=host_data, without_mac=without_mac)
+            break
+
+    return render_template('host.html', data=host_json, without_mac=without_mac)
 
 
 
