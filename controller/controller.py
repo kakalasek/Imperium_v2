@@ -110,6 +110,7 @@ def scan():
 # The host route
 @app.route("/scanner/host")
 def host():
+    global scans
     without_mac = True
     scan_id = request.args.get('scan_id')
     host_ip = request.args.get('host_ip')
@@ -137,9 +138,45 @@ def host():
 
             break
 
-    return render_template('host.html', data=host_json, without_mac=without_mac)
+    return render_template('host.html', data=host_json, without_mac=without_mac, scan_id =scan_id, host_ip=host_ip)
 
+@app.route("/scanner/scan/show_json")
+def show_json():
+    global scans
+    scan_id = request.args.get('scan_id')
 
+    if request.args.get('host_ip'):
+        host_ip = request.args.get('host_ip')
+
+        for entry in scans:
+            if entry["id"] == int(scan_id):
+                scan_json = json.loads(entry["scan_json"])
+                if isinstance(scan_json['host'], dict):
+                    if "@addr" in scan_json['host']['address']:
+                        host_json = scan_json['host']
+                        return host_json, 200
+                    else:
+                        host_json = scan_json['host']
+                        return host_json, 200
+                else:
+                    for host in scan_json['host']:
+                        if "@addr" in host['address']:
+                            if host['address']['@addr'] == host_ip:
+                                host_json = host
+                                return host_json, 200
+                        elif host['address'][0]['@addr'] == host_ip:
+                            host_json = host
+                            return host_json, 200
+                break
+            
+    else:
+
+        for entry in scans:
+            if entry["id"] == int(scan_id):
+                scan_json = json.loads(entry["scan_json"])
+                return scan_json, 200
+        
+    return '', 404
 
 ## THE REST
 ## WORK IN PROGRESS
